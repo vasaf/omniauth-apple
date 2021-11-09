@@ -46,6 +46,7 @@ module OmniAuth
         options[:redirect_uri] || (full_host + script_name + callback_path)
       end
       
+      # Fix nonce mismatch
       def callback_phase
         if request.request_method.downcase.to_sym == :post
           url = "#{callback_url}"
