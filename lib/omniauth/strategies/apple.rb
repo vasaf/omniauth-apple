@@ -45,6 +45,20 @@ module OmniAuth
       def callback_url
         options[:redirect_uri] || (full_host + script_name + callback_path)
       end
+      
+      def callback_phase
+        if request.request_method.downcase.to_sym == :post
+          url = "#{callback_url}"
+          if (code = request.params['code']) && (state = request.params['state'])
+            url += "?code=#{CGI::escape(code)}"
+            url += "&state=#{CGI::escape(state)}"
+            url += "&user=#{CGI::escape(request.params['user'])}" if request.params['user']
+          end
+          session.options[:drop] = true # Do not set a session cookie on this response
+          return redirect url
+        end
+        super
+      end
 
       private
 
